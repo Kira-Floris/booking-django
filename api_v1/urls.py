@@ -1,4 +1,4 @@
-from django.urls import path
+from django.urls import path, include
 
 from api_v1.views.views import *
 from api_v1.views.auth import *
@@ -28,6 +28,10 @@ urlpatterns = [
     path('book/rooms/<str:pk>', updateRoomBook.as_view(), name='updateroombook'),
     path('book/rooms/<str:pk>', deleteRoomBook.as_view(), name='deleteroombook'),
 
-    path('auth/login', MyTokenObtainPairView.as_view(), name='login'),
-    path('auth/register', RegisterAPI.as_view(), name='register'),
+    path('auth/login/', MyTokenObtainPairView.as_view(), name='login'),
+    path('auth/register/', RegisterAPI.as_view(), name='register'),
+    path('auth/getme/', getMe, name='getme'),
+    path('auth/updatedetails/', UpdateProfile.as_view(), name='profile'),
+    path('auth/updatepassword/', ChangePasswordView.as_view(), name='changepassword'),
+    path('auth/forgotpassword/', forgotPassword, name='forgotpassword'),
 ]
