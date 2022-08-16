@@ -18,9 +18,13 @@ def role_required(allowed_roles=[]):
 					return JsonResponse({'message': "Not allowed beyond here"},status=status.HTTP_403_FORBIDDEN)
 			else:
 				if request.headers['Authorization']:
-					token = request.headers['Authorization'].split(" ")[1]
+					try:
+						token = request.headers['Authorization'].split(" ")[1]
+						data = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+					except:
+						return JsonResponse({'message':"Token Invalid"}, status=status.HTTP_403_FORBIDDEN)
 					body = json.loads(request.body.decode('utf-8'))
-					data = jwt.decode(token, settings.SECRET_KEY, algorithms=["HS256"])
+					
 					body['user'] = data['user_id']
 					body = json.dumps(body).encode('utf-8')
 
