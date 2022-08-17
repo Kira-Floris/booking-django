@@ -3,6 +3,9 @@ from django.http import JsonResponse
 from django.utils.decorators import method_decorator
 from django.conf import settings
 from django.core.mail import send_mail
+from django.utils.encoding import force_bytes, force_str
+from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
+from django.urls import reverse
 
 from rest_framework import generics, status
 from rest_framework.decorators import api_view, permission_classes
@@ -77,14 +80,31 @@ def forgotPassword(request):
 	except User.DoesNotExist:
 		return JsonResponse({'message':"object does not exist"}, status=status.HTTP_404_NOT_FOUND)
 	subject = 'Account Password Reset Email'
-	link = request.headers['host']+"/resetpassword/"+token_generator.make_token(user)+"/"
+	token = token_generator.make_token(user)
+	password_reset_token = urlsafe_base64_encode(force_bytes(user.id))
+
+	link = request.headers['host']+"/api/auth/resetpassword/"+password_reset_token+"/"+token+"/"
 	message = f'Hi {user.name},\n\nYou were sent this email due to a request for password reset.\nIf it was you continue with this link.\nLink: {link}\n\nThanks!'
-	send_mail(subject, message, settings.EMAIL_HOST_USER, [body['email']])
+	try:
+		send_mail(subject, message, settings.EMAIL_HOST_USER, [body['email']])
+	except:
+		return JsonResponse({'message':'There was an error sending the email.'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+	return JsonResponse({'message':'Email Sent, Check the email provided'}, status=status.HTTP_200_OK)
 
-	print(message)
+@api_view(['POST'])
+def resetPassword(request,uidb64, token):
+	try:
+		pk = urlsafe_base64_decode(uidb64).decode('utf-8')
+		user = User.objects.get(id=pk)
+		if not token_generator.check_token(user, token):
+			return JsonResponse({'message':'Invalid Token'}, status=status.HTTP_400_BAD_REQUEST)
+		body = json.loads(request.body.decode('utf-8'))
+		user.set_password(body['password'])
+		user.save()
+		return JsonResponse({'message':'Password Reset Successfully'}, status=status.HTTP_200_OK)
+	except:
+		return JsonResponse({'message':'Something went wrong'}, status=status.HTTP_400_BAD_REQUEST)
 
-class ResetPassword:
-	pass
 
 @method_decorator(role_required(allowed_roles=['admin','staff','user']), name='dispatch')
 class ChangePasswordView(generics.UpdateAPIView):
