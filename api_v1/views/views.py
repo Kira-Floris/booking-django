@@ -45,6 +45,14 @@ class updateHotel(generics.RetrieveUpdateAPIView):
 	queryset = Hotel.objects.all()
 	lookup_field = 'pk'
 
+
+@method_decorator(role_required(allowed_roles=['admin','staff']), name='dispatch')
+class updatePhotoHotel(generics.RetrieveUpdateAPIView):
+	serializer_class = HotelPhotoSerializer
+	queryset = Hotel.objects.all()
+	lookup_field = 'pk'
+
+
 @method_decorator(role_required(allowed_roles=['admin','staff']), name='dispatch')
 class deleteHotel(generics.RetrieveDestroyAPIView):
 	serializer_class = HotelSerializer
@@ -70,19 +78,25 @@ class getRoom(generics.RetrieveAPIView):
 
 @method_decorator(role_required(allowed_roles=['admin','staff']), name='dispatch')
 class createRoom(generics.CreateAPIView):
-	serializer_class = HotelSerializer
-	queryset = Hotel.objects.all()
+	serializer_class = RoomSerializer
+	queryset = Room.objects.all()
 
 @method_decorator(role_required(allowed_roles=['admin','staff']), name='dispatch')
 class updateRoom(generics.RetrieveUpdateAPIView):
-	serializer_class = HotelSerializer
-	queryset = Hotel.objects.all()
+	serializer_class = RoomSerializer
+	queryset = Room.objects.all()
+	lookup_field = 'pk'
+
+@method_decorator(role_required(allowed_roles=['admin','staff']), name='dispatch')
+class updatePhotoRoom(generics.RetrieveUpdateAPIView):
+	serializer_class = RoomPhotoSerializer
+	queryset = Room.objects.all()
 	lookup_field = 'pk'
 
 @method_decorator(role_required(allowed_roles=['admin','staff']), name='dispatch')
 class deleteRoom(generics.RetrieveDestroyAPIView):
-	serializer_class = HotelSerializer
-	queryset = Hotel.objects.all()
+	serializer_class = RoomSerializer
+	queryset = Room.objects.all()
 	lookup_field = 'pk'
 
 
