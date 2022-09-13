@@ -1,0 +1,105 @@
+.navigation{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(0, 114, 76, 0.9),rgba(1, 63, 42, 0.97));
+    z-index: 200;
+    clip-path: circle(25px at calc(100% - 75px) 75px);
+    transition: all 300ms ease-in-out;
+}
+
+.navigation #dropdownmenu{
+    background: linear-gradient(rgba(0, 114, 76, 0.9),rgba(1, 63, 42, 0.97));
+    padding-left: 50px;
+    padding-right: 50px;
+}
+
+.navigation.active{
+    clip-path: circle(75%);
+}
+
+.navigation .ham-btn{
+    position: absolute;
+    top: 50px;
+    right: 50px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    cursor: pointer;
+    background: rgb(228, 238, 221);
+    border: 1px solid rgba(53, 65, 47, 0.3);
+}
+
+.navigation .ham-btn span{
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 50%;
+    height: 2px;
+    background: #383636;
+    transition: all 200ms ease-in-out;
+}
+
+.navigation .ham-btn span:nth-child(1) {
+    top: 35%;
+}
+
+.navigation .ham-btn span:nth-child(2) {
+    top: 50%;
+}
+
+.navigation .ham-btn span:nth-child(3) {
+    top: 65%;
+}
+
+.navigation.active .ham-btn span:nth-child(1) {
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(45deg);
+}
+
+.navigation.active .ham-btn span:nth-child(2) {
+    display: none;
+}
+
+.navigation.active .ham-btn span:nth-child(3) {
+    top: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+.navigation .links{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+}
+
+.navigation .links a{
+    position: relative;
+    display: block;
+    margin: 20px 0px;
+    font-size: 25px;
+    font-weight: 600;
+    text-decoration: none;
+    color: #f5f5f5;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+}
+
+.navigation .links a:after{
+    content:"";
+    position: absolute;
+    left: 0px;
+    bottom: -5px;
+    height: 2px;
+    width: 0%;
+    background: rgba(254, 255, 255, 0.9);
+    transition: all 300ms ease-in-out;
+}
+
+.navigation .links a:hover:after{
+    width: 100%;
+    height: 3px;
+}

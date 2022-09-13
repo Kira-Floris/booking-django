@@ -10,6 +10,8 @@ from django.contrib.auth import get_user_model
 
 from rest_framework import serializers
 
+from statistics import mean
+
 
 class MyUserManager(BaseUserManager):
 	def create_user(self, email, role, password, **other_fields):
@@ -71,7 +73,7 @@ class User(AbstractUser):
 	objects = MyUserManager()
 	home_users = UserObject()
 
-def photo_path(instance, filename):
+def hotel_photo_path(instance, filename):
 	return 'uploads/{0}.jpeg'.format(instance.name)
 
 def get_sentinel_user():
@@ -89,9 +91,8 @@ class Hotel(models.Model):
 	country = models.CharField(max_length=255)
 	lat = models.FloatField(null=True, blank=True)
 	lng = models.FloatField(null=True, blank=True)
-	averageRating = models.FloatField(null=True, blank=True)
 	averageCost = models.FloatField(null=True, blank=True)
-	photo = models.ImageField(upload_to=photo_path,default='no-photo.jpg', null=True, blank=True)
+	photo = models.ImageField(upload_to=hotel_photo_path,default='hotel.png', null=True, blank=True)
 	createdAt = models.DateTimeField(auto_now_add=True)
 	user = models.ForeignKey(User, on_delete=models.SET(get_sentinel_user))
 
@@ -99,14 +100,16 @@ class Hotel(models.Model):
 		return self.name
 
 
+def room_photo_path(instance, filename):
+	return 'uploads/{0}.jpeg'.format(instance.title)
+
 class Room(models.Model):
 	title = models.CharField(max_length=255, blank=False, null=False)
 	description = models.TextField()
 	rooms = models.IntegerField()
 	bath = models.IntegerField()
 	price = models.FloatField()
-	days = models.IntegerField()
-	photo = models.ImageField(upload_to=photo_path, default='no-photo.jpg')
+	photo = models.ImageField(upload_to=room_photo_path, default='room.png')
 	createdAt = models.DateTimeField(auto_now_add=True)
 	hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE)
 	user = models.ForeignKey(User, on_delete=models.SET(get_sentinel_user))
@@ -114,6 +117,19 @@ class Room(models.Model):
 
 	def __str__(self):
 		return self.title
+
+	def save(self, *args, **kwargs):
+		super(Room, self).save(*args, **kwargs)
+		hotel = Hotel.objects.get(id=self.hotel.id)
+		rooms = list(Room.objects.filter(hotel=hotel.id).values('price'))
+		prices = list()
+		for room in rooms:
+			prices.append(room['price'])
+		average = mean(prices)
+		hotel.averageCost = average
+		hotel.save()
+
+
 
 class RoomBook(models.Model):
 	start = models.DateTimeField(default=timezone.now, null=False, blank=False)

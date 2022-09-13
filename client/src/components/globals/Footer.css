@@ -1,0 +1,23 @@
+/*
+ * Footer
+ */
+ .blog-footer {
+    padding: 1.6rem 0;
+    border-top-left-radius: 3.5px;
+    border-top-right-radius: 3.5px;
+    text-align: center;
+    position: static;
+    width: 100%;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgb(11, 37, 28);
+}
+  
+.blog-footer .nav-footer{
+    text-decoration: none;
+}
+
+.blog-footer ul{
+    background-color: rgb(11, 37, 28); 
+}
